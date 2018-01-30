@@ -1,0 +1,7 @@
+atmega16l/.vs/
+atmega16l/balcony_mcu/.atmel-start-backup/
+atmega16l/balcony_mcu/.atmelstart/
+atmega16l/balcony_mcu/Debug/
+atmega16l/balcony_mcu/Release/balcony_mcu.eep
+atmega16l/irda/Debug/irda.eep
+atmega16l/irda/Release/Makefile
