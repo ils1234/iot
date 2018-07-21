@@ -47,6 +47,8 @@ temp = 26
 temp_dec = 300
 temp2 = 26
 temp2_dec = 300
+temp_limit = 26
+temp_limit_low = 25
 
 -- start server
 srv=net.createServer(net.TCP)
@@ -59,6 +61,7 @@ srv:listen(2000, function(conn)
         part1 = string.sub(content, 1, 2)
         part2 = string.sub(content, 3, 4)
         part3 = string.sub(content, 5, 6)
+	part4 = string.sub(content, 7)
         if part1 ~= part2 or part1 ~= part3 or part2 ~= part3 then
             conn:send("it works")
             print("bad protocol")
@@ -66,13 +69,27 @@ srv:listen(2000, function(conn)
         end
         chn = tonumber(string.sub(content, 1, 1))
         val = tonumber(string.sub(content, 2, 2))
-        if chn > 7 then
+        if chn > 8 then
             conn:send("bad chn")
             print("bad chn " .. chn)
             return
         end
+	if chn == 8 then
+	    if val == 0 then
+	        temp_limit = 26
+		temp_limit_low = 25
+	    elseif val == 1 then
+	        temp_limit = tonumber(part4)
+		temp_limit_low = temp_limit - 1
+	    else
+                t = string.format("%d", temp_limit)
+	        conn:send(t)
+                print(t)
+            end
+	    return
+	end
 	if val == 0 then
-            if chn ==0 then
+            if chn == 0 then
 	        t = string.format("%d.%03d", temp, temp_dec)
 	        conn:send(t)
                 print(t)
@@ -82,7 +99,7 @@ srv:listen(2000, function(conn)
                 conn:send("off")
 	    end
         elseif val == 1 then
-            if chn ==0 then
+            if chn == 0 then
 	        t = string.format("%d.%03d", temp2, temp2_dec)
 	        conn:send(t)
                 print(t)
@@ -135,13 +152,13 @@ tmr.alarm(tmr_ds18b20, 2000, tmr.ALARM_AUTO, function()
 end)
 
 tmr.alarm(tmr_heater, 5000, tmr.ALARM_AUTO, function()
-    if temp > 26 or temp == 26 and temp_dec >= 300 then
+    if temp > temp_limit or temp == temp_limit and temp_dec >= 300 then
         p0 = gpio.read(0)
 	if p0 ~= gpio.HIGH then
             gpio.write(0, gpio.HIGH)
             print("heater off")
 	end
-    elseif temp < 25 or temp == 25 and temp_dec <= 700 then
+    elseif temp < temp_limit_low or temp == temp_limit_low and temp_dec <= 700 then
         p0 = gpio.read(0)
 	if p0 ~= gpio.LOW then
             gpio.write(0, gpio.LOW)
