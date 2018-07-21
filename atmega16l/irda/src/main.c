@@ -22,18 +22,18 @@ int main(void)
 	//关中断，避免启动被打扰
 	cli();
 	//端口连接、设定、初始化
-	//A0 输出高, A1-A7 输入，关闭上拉
+	//A0 输出高, A1-A7 输入，上拉
 	DDRA = 0x01;
-	PORTA = 0x01;
-	//B0-B7 停用，关闭上拉
+	PORTA = 0xff;
+	//B0-B7 停用，上拉
 	DDRB=0X00;
-	PORTB=0x00;
-	//C0-C7 停用，关闭上拉
+	PORTB=0xff;
+	//C0-C7 停用，上拉
 	DDRC=0x00;
-	PORTC=0x00;
+	PORTC=0xff;
 	//D0-rxd, D1-txd,D2-int0红外, D3-int1按钮, D4-D7 disable
-	DDRD=0x80;
-	PORTD=0x0c; //D2 D3上拉
+	DDRD=0x00;
+	PORTD=0xff; //上拉
 	//MCUCR=0x03;
 	//GICR=0x40;
 	//设定串口
@@ -105,6 +105,12 @@ begin:
 				if (ctrl_device_h == device_h && ctrl_device_l == device_l && ctrl_key == key) {
                 	toggle_relay();	
 					uart_transmit('V');
+					_delay_ms(1000);
+				}
+				else if (INNER_CTRL_H == device_h && INNER_CTRL_L == device_l && INNER_KEY == key) {
+					toggle_relay();
+					uart_transmit('V');
+					_delay_ms(1000);
 				}
 				else {
 					uart_transmit('X');
@@ -154,7 +160,17 @@ ISR(INT0_vect)
 
 ISR(INT1_vect)
 {
+	_delay_ms(100);
+	if ((PIND & 0x08) != 0) {
+		return;
+	}
+	_delay_ms(100);
+	if ((PIND & 0x08) != 0) {
+		return;
+	}
 	toggle_relay();
+	uart_transmit('B');
+	_delay_ms(500);
 }
 
 ISR(TIMER1_COMPA_vect)
