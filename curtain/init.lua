@@ -11,6 +11,7 @@ tmr_active = 0
 tmr_env = 1
 tmr_autooff = 2
 tmr_key = 3
+tmr_led = 4
 pin_dht = 1
 pin_ir = 2
 pin_key = 3
@@ -52,12 +53,16 @@ gpio.write(pin_dir, gpio.HIGH)
 -- curtain operate
 -- 0-stop, 1-down, 2-up
 curtain_status = 0
+curtain_position = "unknown"
 
-function curtain_stop()
+function curtain_stop(reason)
     curtain_status = 0
     gpio.write(pin_sw, gpio.HIGH)
     gpio.write(pin_dir, gpio.HIGH)
     print("stop")
+    if reason == nil then
+        curtain_position = "stop"
+    end
 end
 
 function curtain_down()
@@ -67,13 +72,16 @@ function curtain_down()
     end
     win = gpio.read(pin_win)
     if win == gpio.HIGH then
-        print("window open")
-        return
+       gpio.write(pin_led, gpio.LOW)
+       tmr.start(tmr_led)
+       print("window open")
+       return
     end
     curtain_status = 1
     gpio.write(pin_dir, gpio.LOW)
     gpio.write(pin_sw, gpio.LOW)
     tmr.start(tmr_autooff)
+    curtain_position = "down"
     print("down")
 end
 
@@ -84,6 +92,8 @@ function curtain_up()
     end
     win = gpio.read(pin_win)
     if win == gpio.HIGH then
+        gpio.write(pin_led, gpio.LOW)
+	tmr.start(tmr_led)
         print("window open")
         return
     end
@@ -91,12 +101,22 @@ function curtain_up()
     gpio.write(pin_dir, gpio.HIGH)
     gpio.write(pin_sw, gpio.LOW)
     tmr.start(tmr_autooff)
+    curtain_position = "up"
     print("up")
 end
 
-tmr.alarm(tmr_autooff, 100000, tmr.ALARM_SEMI, function()
-    curtain_stop()
+tmr.alarm(tmr_autooff, 90000, tmr.ALARM_SEMI, function()
+    if curtain_status == 1 then
+        curtain_position = "bottom"
+    elseif curtain_status == 2 then
+        curtain_position = "top"
+    end
+    curtain_stop(1)
     print("auto stop")
+end)
+
+tmr.alarm(tmr_led, 1000, tmr.ALARM_SEMI, function()
+    gpio.write(pin_led, gpio.HIGH)
 end)
 
 -- read ir
@@ -136,9 +156,9 @@ function ir_trig(level, when)
     end
     if bit_count == 32 then
         if bit.bxor(key_code, o_key_code) == 255 then
-	    if device_code == 0 and key_code == 0 or device_code == 4 and key_code == 99 then
+	    if device_code == 0 and key_code == 21 or device_code == 4 and key_code == 99 then
 	        curtain_up()
-	    elseif device_code == 0 and key_code == 2 or device_code == 4 and key_code == 97 then
+	    elseif device_code == 0 and key_code == 22 or device_code == 4 and key_code == 97 then
 	        curtain_down()
 	    end
 	end
@@ -215,10 +235,21 @@ srv:listen(2000, function(conn)
                 else
 		    conn:send("up")
 	        end
+	    elseif val == 3 then
+	        conn:send(curtain_position)
 	    else
 	        conn:send("bad val")
                 print("bad val " .. val)
                 return
+	    end
+        elseif chn == 3 then
+	    v = gpio.read(pin_win)
+	    if v == gpio.HIGH then
+	        conn:send("open")
+		print("window open")
+	    else
+	        conn:send("closed")
+		print("window closed")
 	    end
         else
             conn:send("bad chn")
