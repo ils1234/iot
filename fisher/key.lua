@@ -28,12 +28,13 @@ function addwater_control()
    water_level = gpio.read(pin_high_level)
    if water_level == gpio.HIGH then
       gpio.write(pin_addwater, gpio.HIGH)
-      add_water_wait = 10
+      addwater_wait = 10
       return
    end
    -- pass if temp low
    if temp < temp_limit_low or temp == temp_limit_low and temp_dec <= 900 then
       gpio.write(pin_addwater, gpio.HIGH)
+      addwater_wait = 10
       return
    end
    -- add / wait
