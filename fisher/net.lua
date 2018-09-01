@@ -25,5 +25,33 @@ function active_net()
    http.get(active_url, nil, http_get)
 end
 
+-- connect client
+function send_client(cmd)
+   local soc = net.createConnection(net.TCP, 0)
+   soc:on("connection", function(sck, cont)
+      sck:send(cmd)
+   end)
+   soc:on("receive", function(sck, cont)
+      sck:close()
+   end)
+   soc:connect(client_port, client_host)
+end
+
+function read_client(cmd, conn)
+   local soc = net.createConnection(net.TCP, 0)
+   soc:on("connection", function(sck, cont)
+      sck:send(cmd)
+   end)
+   soc:on("receive", function(sck, cont)
+      sck:close()
+      if cont == 'on' then
+         conn:send("off")
+      else
+	 conn:send("on")
+      end
+   end)
+   soc:connect(client_port, client_host)
+end
+
 -- tmr set
 tmr.alarm(tmr_active, 100000, tmr.ALARM_AUTO, active_net)

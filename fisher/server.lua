@@ -2,9 +2,10 @@ print('server\n')
 
 -- out 12345678
 -- in abc
--- virtual uvwx
+-- virtual ABCD
 pin = {[49]=0, [50]=3, [51]=4, [52]=5, [53]=6, [54]=7, [55]=8, [56]=9,
-       [97]=1, [98]=2, [99]=12}
+       [97]=1, [98]=2, [99]=12,
+       [65]=0, [66]=1, [67]=2, [68]=3}
 
 function close_socket(s)
    s:close()
@@ -20,6 +21,7 @@ function remote_ctrl(conn, content)
       file.remove("init.bak")
       file.rename("init.lua", "init.bak")
       print("factury mode")
+      node.restart()
       return
    end
    local part1 = string.sub(content, 1, 2)
@@ -66,10 +68,9 @@ function remote_ctrl(conn, content)
       elseif val == 4 then
          temp_limit = tonumber(part4)
          temp_limit_low = temp_limit - 1
-      elseif val == 5 then
-         local t = string.format("%d.%03d", temp3, temp3_dec)
-         conn:send(t)
-         print(t)
+	 conn:send("ok")
+      else
+	 conn:send("bad val" .. val)
       end
    elseif cchn >= 50 and cchn <= 56 then
       -- cchn 50-56, output, on|off|status
@@ -93,7 +94,6 @@ function remote_ctrl(conn, content)
       else
          conn:send("bad val")
          print("bad val " .. val)
-         return
       end
    elseif cchn >=97 and cchn <= 99 then
       -- cchn 97-99, input, status
@@ -105,8 +105,18 @@ function remote_ctrl(conn, content)
          print(chn .. " was on")
          conn:send("on")
       end
+   elseif cchn >= 65 and cchn <= 68 then
+      if val == 0 or val == 1 then
+	 local cmd = "" .. chn .. val .. chn .. val .. chn .. val
+	 send_client(cmd)
+      elseif val == 2 then
+	 local cmd = "" .. chn .. '2' .. chn .. '2' .. chn .. '2'
+	 read_client(cmd, conn)
+      else
+         conn:send("bad val")
+         print("bad val " .. val)
+      end
    end
-   return
 end
 
 function srv_listen(conn)

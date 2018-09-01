@@ -42,16 +42,17 @@ function addwater_control()
       addwater_wait = addwater_wait - 1
       gpio.write(pin_addwater, gpio.HIGH)
       return
-   elseif addwater_work == 0 then
-      addwater_work = 5
+   else
+      addwater_work = 3
       return
    end
    if addwater_work > 0 then
       addwater_work = addwater_work - 1
       gpio.write(pin_addwater, gpio.LOW)
       return
-   elseif addwater_wait == 0 then
+   else
       addwater_wait = 10
+      gpio.write(pin_addwater, gpio.HIGH)
       return
    end
 end
@@ -160,8 +161,9 @@ function f7()
    end
 end
 
--- f8 add water
+-- f8 manual add water
 function f8()
+   tmr.stop(tmr_addwater)
    local v = gpio.read(pin_addwater)
    if v == gpio.HIGH then
       gpio.write(pin_addwater, gpio.LOW)
@@ -177,7 +179,9 @@ function f9()
 
    running, mode = tmr.state(tmr_addwater)
    if running then
+      -- stop tmr and pump
       tmr.stop(tmr_addwater)
+      gpio.write(pin_addwater, gpio.HIGH)
    else
       addwater_work = 5
       addwater_wait = 0
@@ -196,7 +200,7 @@ function f10()
    end
 end
 
-func = {f1, f2, f3, f4, f5, f6, f7, f8, f9, f10}
+key_function = {f1, f2, f3, f4, f5, f6, f7, f8, f9, f10}
 
 current_key = 0
 nop_cnt = 0
@@ -213,7 +217,7 @@ function key_control()
          if current_key == k then
             current_key = 0
 	    nop_cnt = 4
-            func[k]()
+            key_func[k]()
          else
             current_key = k
          end
