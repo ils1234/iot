@@ -217,7 +217,7 @@ function key_control()
          if current_key == k then
             current_key = 0
 	    nop_cnt = 4
-            key_func[k]()
+            key_function[k]()
          else
             current_key = k
          end
