@@ -2,6 +2,8 @@ print("charge\n")
 
 tmr_charge = 5
 full_tick = 0
+charge_tick = 3
+charge_state = 'unknown'
 
 function charge_control()
    local soc = net.createConnection(net.TCP, 0)
@@ -15,7 +17,9 @@ function charge_control()
       else
 	 full_tick = 0
       end
-      if full_tick >= 3 then
+      if full_tick >= charge_tick then
+	 local tm = rtctime.epoch2cal(rtctime.get())
+	 charge_state = string.format("end %04d-%02d-%02d %02d:%02d:%02d", tm["year"], tm["mon"], tm["day"], tm["hour"], tm["min"], tm["sec"])
          local soc2 =  net.createConnection(net.TCP, 0)
          soc2:on("connection", function(sck2, cont2)
             sck2:send("303030")

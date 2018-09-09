@@ -5,7 +5,7 @@ print('server\n')
 -- virtual ABCD
 pin = {[49]=0, [50]=3, [51]=4, [52]=5, [53]=6, [54]=7, [55]=8, [56]=9,
        [97]=1, [98]=2, [99]=12,
-       [65]=0, [66]=1, [67]=2, [68]=3}
+       [65]=0, [66]=1, [67]=2, [68]=3, [69]=0, [70]=0}
 
 function close_socket(s)
    s:close()
@@ -115,6 +115,37 @@ function remote_ctrl(conn, content)
       else
          conn:send("bad val")
          print("bad val " .. val)
+      end
+   elseif cchn == 69 then
+      -- charge state
+      if val == 0 then
+	 conn:send(tostring(full_tick))
+	 print("tick " .. full_tick)
+      elseif val == 1 then
+	 conn:send(tostring(charge_tick))
+	 print("end 10min*" .. charge_tick)
+      elseif val == 2 then
+	 conn:send(charge_state)
+         print(charge_state)
+      elseif val == 3 then
+         charge_tick = tonumber(part4)
+	 conn:send("ok")
+      else
+	 conn:send("bad val" .. val)
+      end
+   elseif cchn == 70 then
+      -- addwater state
+      if val == 0 then
+	 conn:send(tostring(addwater_wait))
+	 print("wait " .. addwater_wait)
+      elseif val == 1 then
+	 conn:send(tostring(addwater_work))
+	 print("work " .. addwater_work)
+      elseif val == 2 then
+	 conn:send(addwater_state)
+         print(addwater_state)
+      else
+	 conn:send("bad val" .. val)
       end
    end
 end
