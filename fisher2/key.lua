@@ -18,7 +18,7 @@ function key_mainlight()
    soc:on("receive", function(sck, cont)
       sck:close()
       local cmd	     
-      if cont == "on" then
+      if cont == "off" then
           cmd = "010101"
       else
           cmd = "000000"
@@ -75,7 +75,7 @@ function key_socket()
    soc:on("receive", function(sck, cont)
       sck:close()
       local cmd
-      if cont == "on" then
+      if cont == "off" then
           cmd = "111111"
       else
           cmd = "101010"

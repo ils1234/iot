@@ -5,7 +5,7 @@ wifi_id = {ssid = "DFS", pwd = "aishidongfang", auto = true}
 ipgw = {ip = "192.168.1.242", netmask="255.255.255.0", gateway="192.168.1.1"}
 host = "fisher"
 ns = "192.168.1.1"
-client_host, client_port = "192.168.1.59", 2000
+client_host, client_port = "192.168.1.244", 2000
 active_url = "http://192.168.1.12/active.php"
 
 -- set wifi
