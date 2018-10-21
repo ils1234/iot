@@ -1,8 +1,5 @@
 print('temperature\n')
 
-tmr_ds18b20 = 1
-pin_ds18b20 = 11
-
 ds_addr = {"28:FF:89:42:75:16:03:E9"}
 
 -- set ds18b20

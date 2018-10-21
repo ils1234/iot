@@ -1,6 +1,5 @@
 print("net\n")
 
-tmr_active = 0
 wifi_id = {ssid = "DFS", pwd = "aishidongfang", auto = true}
 ipgw = {ip = "192.168.1.244", netmask="255.255.255.0", gateway="192.168.1.1"}
 host = "balcony"
