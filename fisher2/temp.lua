@@ -1,9 +1,5 @@
 print('temperature\n')
 
-tmr_ds18b20, tmr_heater = 1,2
-pin_heater = 0
-pin_ds18b20 = 11
-
 ds_addr = {"28:FF:5F:7F:A6:16:03:03", "28:FF:53:F0:C1:17:04:F9"}
 
 -- set heater

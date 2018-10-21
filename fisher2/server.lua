@@ -2,10 +2,9 @@ print('server\n')
 
 -- out 12345678
 -- in abc
--- virtual ABCD
 pin = {[49]=0, [50]=3, [51]=4, [52]=5, [53]=6, [54]=7, [55]=8, [56]=9,
        [97]=1, [98]=2, [99]=12,
-       [65]=0, [66]=1, [67]=2, [68]=3, [70]=0}
+       [70]=0}
 
 function close_socket(s)
    s:close()
@@ -55,10 +54,10 @@ function remote_ctrl(conn, content)
       elseif val == 2 then
          local v = gpio.read(chn)
          if v == gpio.HIGH then
-            print(chn .. " was off")
+            print("heater is off")
             conn:send("off")
          else
-            print(chn .. " was on")
+            print("heater is on")
             conn:send("on")
          end
       elseif val == 3 then
@@ -105,28 +104,31 @@ function remote_ctrl(conn, content)
          print(chn .. " was on")
          conn:send("on")
       end
-   elseif cchn >= 65 and cchn <= 68 then
-      if val == 0 or val == 1 then
-	 local cmd = "" .. chn .. val .. chn .. val .. chn .. val
-	 send_client(cmd)
-      elseif val == 2 then
-	 local cmd = "" .. chn .. '2' .. chn .. '2' .. chn .. '2'
-	 read_client(cmd, conn)
-      else
-         conn:send("bad val")
-         print("bad val " .. val)
-      end
    elseif cchn == 70 then
       -- addwater state
       if val == 0 then
-	 conn:send(tostring(addwater_wait))
-	 print("wait " .. addwater_wait)
+	 conn:send(tostring(wait_time))
+	 print("wait " .. wait_time)
       elseif val == 1 then
-	 conn:send(tostring(addwater_work))
-	 print("work " .. addwater_work)
+	 wait_time = tonumber(part4)
+	 conn:send("ok")
+	 print("set wait " .. wait_time)
       elseif val == 2 then
+	 conn:send(tostring(work_time))
+	 print("work " .. work_time)
+      elseif val == 3 then
+	 work_time = tonumber(part4)
+	 conn:send("ok")
+	 print("set work " .. work_time)
+      elseif val == 4 then
+	 conn:send(tostring(addwater_wait))
+	 print("current wait " .. addwater_wait)
+      elseif val == 5 then
+	 conn:send(tostring(addwater_work))
+	 print("current work " .. addwater_work)
+      elseif val == 6 then
 	 conn:send(addwater_state)
-         print(addwater_state)
+         print("current state " .. addwater_state)
       else
 	 conn:send("bad val" .. val)
       end

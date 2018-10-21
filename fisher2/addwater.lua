@@ -1,20 +1,22 @@
 print('addwater\n')
 
-tmr_addwater = 4
-pin_main_water_level = 1
-pin_high_level = 12
-pin_addwater = 4
-
+wait_time = 30
+work_time = 10
 addwater_work = 0
 addwater_wait = 0
 addwater_state = "unknown"
+
+function addwater_stop()
+   -- stop tmr and pump
+   tmr.stop(tmr_addwater)
+   gpio.write(pin_addwater, gpio.HIGH)
+end
 
 function addwater_control()
    -- stop if water enough
    local water_level = gpio.read(pin_main_water_level)
    if water_level == gpio.HIGH then
-      gpio.write(pin_addwater, gpio.HIGH)
-      tmr.stop(tmr_addwater)
+      addwater_stop()
       addwater_state = "done"
       return
    end
@@ -22,14 +24,14 @@ function addwater_control()
    water_level = gpio.read(pin_high_level)
    if water_level == gpio.HIGH then
       gpio.write(pin_addwater, gpio.HIGH)
-      addwater_wait = 10
+      addwater_wait = wait_time
       addwater_state = "full"
       return
    end
    -- pass if temp low
    if temp < temp_limit_low or temp == temp_limit_low and temp_dec <= 900 then
       gpio.write(pin_addwater, gpio.HIGH)
-      addwater_wait = 10
+      addwater_wait = wait_time
       addwater_state = "cold"
       return
    end
@@ -40,7 +42,7 @@ function addwater_control()
       addwater_state = "wait"
       return
    elseif addwater_work == 0 then
-      addwater_work = 5
+      addwater_work = work_time
       addwater_state = "topump"
       return
    end
@@ -48,7 +50,7 @@ function addwater_control()
       addwater_work = addwater_work - 1
       gpio.write(pin_addwater, gpio.LOW)
       if addwater_work == 0 then
-	 addwater_wait = 10
+	 addwater_wait = wait_time
 	 addwater_state = "towait"
       else
 	 addwater_state = "pump"
@@ -62,10 +64,8 @@ function key_addwater()
 
    running, mode = tmr.state(tmr_addwater)
    if running then
-      -- stop tmr and pump
-      tmr.stop(tmr_addwater)
-      gpio.write(pin_addwater, gpio.HIGH)
-      addwater_state = "stop"
+      addwater_stop()
+      addwater_state = "stop"	 
    else
       addwater_work = 5
       addwater_wait = 0
