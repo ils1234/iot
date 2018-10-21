@@ -21,10 +21,6 @@ function switch_turn(v)
     end
 end
 
-function heater_on(e)
-   switch_turn(gpio.HIGH)
-end
-
 function button_trig(level, when)
     gpio.trig(pin_key)
     switch_turn()

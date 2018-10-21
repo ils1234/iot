@@ -1,5 +1,10 @@
 print("cron\n")
 
+-- cron call func
+function heater_on(e)
+   switch_turn(gpio.HIGH)
+end
+
 cron_list = {}
 entry_list = {}
 

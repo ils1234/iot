@@ -9,6 +9,7 @@ pin_key = 3
 pin_led = 4
 
 -- set tmr
+tmr_active = 0
 tmr_autooff = 1
 tmr_btn = 2
 
