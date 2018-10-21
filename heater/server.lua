@@ -3,8 +3,7 @@ print('server\n')
 -- out 12345678
 -- in abc
 -- virtual ABCD
-pin = {[48]=0, [49]=1, [50]=2, [51]=3, [52]=4, [53]=5, [54]=6, [55]=7,
-       [57]=0, [56]=12}
+pin = {[48]=0, [49]=1, [116]=0}
 
 function close_socket(s)
    s:close()
@@ -34,60 +33,56 @@ function remote_ctrl(conn, content)
       print("bad chn " .. cchn)
       return
    end
-   if cchn == 57 then
-      -- chn 8|cchn 57 auto control
-      local t = string.format("%d.%03d", temp, temp_dec)
-      conn:send(t)
-      print(t)
-   elseif cchn >= 48 and cchn <= 55 then
-      -- cchn 50-56, output, on|off|status
+   if cchn == 48 then
+      -- chn 0 cron
       if val == 0 then
-         gpio.write(chn, gpio.HIGH)
+	 clear_cron()
+	 conn:send("clear")
+	 print("clear cron")
+      elseif val == 1 then
+	 local res = set_cron(part4)
+	 conn:send("set " .. res)
+	 print("set cron" .. res)
+      elseif val == 2 then
+	 local c = list_cron()
+	 conn:send(c)
+	 print("list cron")
+      elseif val == 3 then
+	 save_cron()
+	 conn:send("saved")
+	 print("save cron")
+      else
+	 conn:send("bad val")
+	 print("bad val " .. val)
+      end
+   elseif cchn == 49 then
+      -- chn 1, output on|off|status
+      if val == 0 then
+	 switch_turn(gpio.LOW)
          print(chn .. " off")
          conn:send("off")
       elseif val == 1 then
-         gpio.write(chn, gpio.LOW)
+	 switch_turn(gpio.HIGH)
          print(chn .. " on")
          conn:send("on")
       elseif val == 2 then
          local v = gpio.read(chn)
          if v == gpio.HIGH then
-            print(chn .. " was off")
-            conn:send("off")
-         else
             print(chn .. " was on")
             conn:send("on")
+         else
+            print(chn .. " was off")
+            conn:send("off")
          end
       else
          conn:send("bad val")
          print("bad val " .. val)
       end
-   elseif cchn == 56 then
-      -- charge state
-      if val == 0 then
-	 conn:send(tostring(full_tick))
-	 print("tick " .. full_tick)
-      elseif val == 1 then
-	 conn:send(tostring(charge_tick))
-	 print("end 1min*" .. charge_tick)
-      elseif val == 2 then
-	 local v = gpio.read(chn)
-         if v == gpio.HIGH then
-            print("light was on")
-            conn:send("on")
-         else
-            print("light was off")
-            conn:send("off")
-         end
-      elseif val == 3 then
-	 conn:send(charge_state)
-         print(charge_state)
-      elseif val == 4 then
-         charge_tick = tonumber(part4)
-	 conn:send("ok")
-      else
-	 conn:send("bad val" .. val)
-      end
+   elseif cchn == 116 then
+      local tm = rtctime.epoch2cal(rtctime.get())
+      local time_str = string.format("RTC %04d-%02d-%02d %02d:%02d:%02d", tm["year"], tm["mon"], tm["day"], tm["hour"], tm["min"], tm["sec"])
+      conn:send(time_str)
+      print(time_str)
    end
 end
 
