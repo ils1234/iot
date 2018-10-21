@@ -1,9 +1,5 @@
 print("cron\n")
 
-function heater_on(e)
-   switch_turn(gpio.HIGH)
-end
-
 cron_list = {}
 entry_list = {}
 

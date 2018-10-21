@@ -4,12 +4,19 @@ print('\nDF Fisher\n')
 -- 1 to relay
 -- 3 to key
 -- 4 to light
+pin_relay = 1
+pin_key = 3
+pin_led = 4
 
-gpio.mode(1, gpio.OUTPUT)
-gpio.mode(3, gpio.INT, gpio.PULLUP)
-gpio.mode(4, gpio.OUTPUT)
-gpio.write(1, gpio.LOW)
-gpio.write(4, gpio.HIGH)
+-- set tmr
+tmr_autooff = 1
+tmr_btn = 2
+
+gpio.mode(pin_relay, gpio.OUTPUT)
+gpio.mode(pin_key, gpio.INT, gpio.PULLUP)
+gpio.mode(pin_led, gpio.OUTPUT)
+gpio.write(pin_relay, gpio.LOW)
+gpio.write(pin_led, gpio.HIGH)
 
 dofile("net.lua")
 dofile("heater.lua")

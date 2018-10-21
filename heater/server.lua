@@ -1,9 +1,6 @@
 print('server\n')
 
--- out 12345678
--- in abc
--- virtual ABCD
-pin = {[48]=0, [49]=1, [116]=0}
+server_chn = {h=1, c=-1, t=-1}
 
 function close_socket(s)
    s:close()
@@ -25,15 +22,15 @@ function remote_ctrl(conn, content)
       print("bad protocol")
       return
    end
-   local cchn = string.byte(content, 1)
+   local cchn = string.sub(content, 1, 1)
    local val = tonumber(string.sub(content, 2, 2))
-   local chn = pin[cchn]
+   local chn = server_chn[cchn]
    if chn == nil then
       conn:send("bad chn")
       print("bad chn " .. cchn)
       return
    end
-   if cchn == 48 then
+   if cchn == 'c' then
       -- chn 0 cron
       if val == 0 then
 	 clear_cron()
@@ -55,7 +52,7 @@ function remote_ctrl(conn, content)
 	 conn:send("bad val")
 	 print("bad val " .. val)
       end
-   elseif cchn == 49 then
+   elseif cchn == 'h' then
       -- chn 1, output on|off|status
       if val == 0 then
 	 switch_turn(gpio.LOW)
@@ -78,9 +75,9 @@ function remote_ctrl(conn, content)
          conn:send("bad val")
          print("bad val " .. val)
       end
-   elseif cchn == 116 then
+   elseif cchn == 't' then
       local tm = rtctime.epoch2cal(rtctime.get())
-      local time_str = string.format("RTC %04d-%02d-%02d %02d:%02d:%02d", tm["year"], tm["mon"], tm["day"], tm["hour"], tm["min"], tm["sec"])
+      local time_str = string.format("%04d-%02d-%02d %02d:%02d:%02d", tm["year"], tm["mon"], tm["day"], tm["hour"], tm["min"], tm["sec"])
       conn:send(time_str)
       print(time_str)
    end

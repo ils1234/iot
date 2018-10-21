@@ -1,17 +1,6 @@
 print('heater\n')
 
 -- 4-led, 1-relay, 3-key
-pin_relay = 1
-pin_key = 3
-pin_led = 4
-tmr_autooff = 1
-tmr_btn = 2
-
-tmr.alarm(tmr_autooff, 1200000, tmr.ALARM_SEMI, function()
-     gpio.write(pin_relay, gpio.LOW)
-     gpio.write(pin_led, gpio.HIGH)
-     print("autooff")
-end)
 
 -- by button
 function switch_turn(v)
@@ -32,6 +21,10 @@ function switch_turn(v)
     end
 end
 
+function heater_on(e)
+   switch_turn(gpio.HIGH)
+end
+
 function button_trig(level, when)
     gpio.trig(pin_key)
     switch_turn()
@@ -39,4 +32,10 @@ function button_trig(level, when)
         gpio.trig(pin_key, "down", button_trig)
     end)
 end
+
 gpio.trig(pin_key, "down", button_trig)
+
+tmr.alarm(tmr_autooff, 1200000, tmr.ALARM_SEMI, function()
+     switch_turn(gpio.LOW)
+     print("autooff")
+end)
