@@ -3,8 +3,8 @@ print('server\n')
 -- out 12345678
 -- in abc
 pin = {[49]=0, [50]=3, [51]=4, [52]=5, [53]=6, [54]=7, [55]=8, [56]=9,
-       [97]=1, [98]=2, [99]=12,
-       [70]=0}
+       [65]=1, [66]=2, [67]=12,
+       [70]=0, [99]=0, [116]=0}
 
 function close_socket(s)
    s:close()
@@ -94,7 +94,7 @@ function remote_ctrl(conn, content)
          conn:send("bad val")
          print("bad val " .. val)
       end
-   elseif cchn >=97 and cchn <= 99 then
+   elseif cchn >=65 and cchn <= 67 then
       -- cchn 97-99, input, status
       local v = gpio.read(chn)
       if v == gpio.HIGH then
@@ -132,6 +132,33 @@ function remote_ctrl(conn, content)
       else
 	 conn:send("bad val" .. val)
       end
+   elseif cchn == 99 then
+      -- chn 0 cron
+      if val == 0 then
+	 clear_cron()
+	 conn:send("clear")
+	 print("clear cron")
+      elseif val == 1 then
+	 local res = set_cron(part4)
+	 conn:send("set " .. res)
+	 print("set cron" .. res)
+      elseif val == 2 then
+	 local c = list_cron()
+	 conn:send(c)
+	 print("list cron")
+      elseif val == 3 then
+	 save_cron()
+	 conn:send("saved")
+	 print("save cron")
+      else
+	 conn:send("bad val")
+	 print("bad val " .. val)
+      end
+   elseif cchn == 116 then
+      local tm = rtctime.epoch2cal(rtctime.get())
+      local time_str = string.format("%04d-%02d-%02d %02d:%02d:%02d", tm["year"], tm["mon"], tm["day"], tm["hour"], tm["min"], tm["sec"])
+      conn:send(time_str)
+      print(time_str)
    end
 end
 
