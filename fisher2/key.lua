@@ -68,10 +68,10 @@ end
 function key_pump()
    tmr.stop(tmr_addwater)
    local v = gpio.read(pin_addwater)
-   if v == gpio.HIGH then
+   if v == gpio.LOW then
       addwater_stop()
    else
-      gpio.write(pin_addwater, gpio.HIGH)
+      gpio.write(pin_addwater, gpio.LOW)
    end
 end
 
