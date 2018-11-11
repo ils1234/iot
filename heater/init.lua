@@ -10,8 +10,9 @@ pin_led = 4
 
 -- set tmr
 tmr_active = 0
-tmr_autooff = 1
+tmr_heater = 1
 tmr_btn = 2
+tmr_readtemp = 3
 
 gpio.mode(pin_relay, gpio.OUTPUT)
 gpio.mode(pin_key, gpio.INT, gpio.PULLUP)

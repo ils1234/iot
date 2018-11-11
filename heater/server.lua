@@ -55,11 +55,11 @@ function remote_ctrl(conn, content)
    elseif cchn == 'h' then
       -- chn 1, output on|off|status
       if val == 0 then
-	 switch_turn(gpio.LOW)
+	 heater_force_off()
          print(chn .. " off")
          conn:send("off")
       elseif val == 1 then
-	 switch_turn(gpio.HIGH)
+	 heater_force_on()
          print(chn .. " on")
          conn:send("on")
       elseif val == 2 then

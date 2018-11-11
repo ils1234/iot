@@ -5,6 +5,7 @@ ipgw = {ip = "192.168.1.241", netmask="255.255.255.0", gateway="192.168.1.1"}
 host = "house-heater"
 ns = "192.168.1.1"
 active_url = "http://192.168.1.12/active.php"
+client_host, client_port = "192.168.1.243", 2000
 
 -- set wifi
 wifi.setmode(wifi.STATION)
