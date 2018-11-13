@@ -65,12 +65,38 @@ function remote_ctrl(conn, content)
       elseif val == 2 then
          local v = gpio.read(chn)
          if v == gpio.HIGH then
-            print(chn .. " was on")
+            print("heater was on")
             conn:send("on")
          else
-            print(chn .. " was off")
+            print("heater was off")
             conn:send("off")
          end
+      elseif val == 3 then
+	 conn:send(tostring(wait_time))
+	 print("wait " .. wait_time)
+      elseif val == 4 then
+	 wait_time = tonumber(part4)
+	 conn:send("ok")
+	 print("set wait " .. wait_time)
+      elseif val == 5 then
+	 conn:send(tostring(work_time))
+	 print("work " .. work_time)
+      elseif val == 6 then
+	 work_time = tonumber(part4)
+	 conn:send("ok")
+	 print("set work " .. work_time)
+      elseif val == 7 then
+	 conn:send(tostring(heater_wait))
+	 print("current wait " .. heater_wait)
+      elseif val == 8 then
+	 conn:send(tostring(heater_work))
+	 print("current work " .. heater_work)
+      elseif val == 9 then
+	 if burn == true then
+	    conn:send('on')
+	 else
+	    conn:send('off')
+	 end
       else
          conn:send("bad val")
          print("bad val " .. val)
