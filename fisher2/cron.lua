@@ -10,11 +10,11 @@ function light_off(e)
 end
 
 function camera_on(e)
-   gpio.write(pin_camera, gpio.LOW)
+   gpio.write(pin_camera, gpio.HIGH)
 end
 
 function camera_off(e)
-   gpio.write(pin_camera, gpio.HIGH)
+   gpio.write(pin_camera, gpio.LOW)
 end
 
 function feed_fish(e)
