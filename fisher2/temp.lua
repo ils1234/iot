@@ -1,8 +1,11 @@
 print('temperature\n')
 
 -- set ds18b20
-ds18b20.setup(pin_ds18b20)
-ds18b20.setting(ds_addr, 12)
+do
+   ds_addr = {"28:FF:5F:7F:A6:16:03:03", "28:FF:53:F0:C1:17:04:F9"}
+   ds18b20.setup(pin_ds18b20)
+   ds18b20.setting(ds_addr, 12)
+end
 
 ds_current = 0
 temp, temp_dec = 26, 300
