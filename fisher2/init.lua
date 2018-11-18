@@ -24,6 +24,7 @@ tmr_ds18b20 = 1
 tmr_heater = 2
 tmr_key = 3
 tmr_addwater = 4
+tmr_filter = 5
 
 gpio.mode(pin_heater, gpio.OUTPUT)
 gpio.mode(pin_wave, gpio.OUTPUT)
@@ -50,5 +51,5 @@ dofile("temp.lua")
 dofile("server.lua")
 dofile("addwater.lua")
 dofile("key.lua")
-dofile("alarm.lua")
+dofile("filterfix.lua")
 dofile("cron.lua")

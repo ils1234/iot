@@ -1,6 +1,6 @@
 print('key\n')
 
-key_volt = {{646,666},{758,778},{868,888},{980,1000},{1018,1024},{538,558},{431,451},{319,339},{211,231},{99,119}}
+key_volt = {{646,666},{758,778},{868,888},{980,1000},{1018,1024},{538,558},{431,451},{319,339},{211,231}}
 
 -- f1 light
 function key_light()
@@ -75,18 +75,7 @@ function key_pump()
    end
 end
 
--- f10 add 1 temperature
-function key_addtemp()
-   if temp_limit >= 32 then
-      temp_limit_low = 17
-      temp_limit = 18
-   else
-      temp_limit = temp_limit + 1
-      temp_limit_low = temp_limit_low + 1
-   end
-end
-
-key_function = {key_light, key_bulb, key_fog, key_wave, key_socket, key_filter, key_camera, key_pump, key_addwater, key_addtemp}
+key_function = {key_light, key_bulb, key_fog, key_wave, key_socket, key_filter, key_camera, key_pump, key_addwater}
 
 current_key = 0
 nop_cnt = 0

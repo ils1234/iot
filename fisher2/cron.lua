@@ -9,6 +9,22 @@ function light_off(e)
    gpio.write(pin_light, gpio.HIGH)
 end
 
+function wave_on(e)
+   gpio.write(pin_wave, gpio.LOW)
+end
+
+function wave_off(e)
+   gpio.write(pin_wave, gpio.HIGH)
+end
+
+function fog_on(e)
+   gpio.write(pin_fog, gpio.LOW)
+end
+
+function fog_off(e)
+   gpio.write(pin_fog, gpio.HIGH)
+end
+
 function camera_on(e)
    gpio.write(pin_camera, gpio.HIGH)
 end
@@ -116,17 +132,19 @@ function save_cron()
 end
 
 -- load_cron on boot
-local fd = file.open('cron.txt', 'r')
-if fd then
-   while true do
-      local s = fd:readline()
-      if s == nil then
-	 break
+do
+   local fd = file.open('cron.txt', 'r')
+   if fd then
+      while true do
+	 local s = fd:readline()
+	 if s == nil then
+	    break
+	 end
+	 local e = string.find(s, "\n", 1)
+	 if e ~= nil then
+	    s = string.sub(s, 1, e - 1)
+	 end
+	 set_cron(s)
       end
-      local e = string.find(s, "\n", 1)
-      if e ~= nil then
-	 s = string.sub(s, 1, e - 1)
-      end
-      set_cron(s)
    end
 end

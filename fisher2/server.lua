@@ -22,6 +22,9 @@ function remote_ctrl(conn, content)
       print("factury mode")
       node.restart()
       return
+   elseif content == "ESHELL" then
+      uart.alt(0)
+      return
    end
    local part1 = string.sub(content, 1, 2)
    local part2 = string.sub(content, 3, 4)
@@ -66,7 +69,6 @@ function remote_ctrl(conn, content)
          print(t)
       elseif val == 4 then
          temp_limit = tonumber(part4)
-         temp_limit_low = temp_limit - 1
 	 conn:send("ok")
       else
 	 conn:send("bad val" .. val)

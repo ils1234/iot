@@ -1,19 +1,21 @@
 print("net\n")
 
-wifi_id = {ssid = "DFS", pwd = "aishidongfang", auto = true}
-ipgw = {ip = "192.168.1.242", netmask="255.255.255.0", gateway="192.168.1.1"}
-host = "fisher"
-ns = "192.168.1.1"
 client_host, client_port = "192.168.1.244", 2000
-active_url = "http://192.168.1.12/active.php"
 
 -- set wifi
-wifi.setmode(wifi.STATION)
-wifi.sta.config(wifi_id)
-wifi.sta.sethostname(host)
-wifi.sta.setip(ipgw)
-net.dns.setdnsserver(ns, 0)
-sntp.sync(nil, nil, nil, 1)
+do
+   local wifi_id = {ssid = "DFS", pwd = "aishidongfang", auto = true}
+   local ipgw = {ip = "192.168.1.242", netmask="255.255.255.0", gateway="192.168.1.1"}
+   local host = "fisher"
+   local ns = "192.168.1.1"
+
+   wifi.setmode(wifi.STATION)
+   wifi.sta.config(wifi_id)
+   wifi.sta.sethostname(host)
+   wifi.sta.setip(ipgw)
+   net.dns.setdnsserver(ns, 0)
+   sntp.sync(nil, nil, nil, 1)
+end
 
 -- active network callback
 function http_get(code, data)
@@ -21,8 +23,12 @@ function http_get(code, data)
 end
 
 function active_net()
+   local active_url = "http://192.168.1.12/active.php"
    http.get(active_url, nil, http_get)
 end
+
+-- tmr set
+tmr.alarm(tmr_active, 100000, tmr.ALARM_AUTO, active_net)
 
 -- connect client
 function send_client(cmd)
@@ -77,6 +83,3 @@ function client_do(qcmd, oncmd, offcmd)
    end)
    soc:connect(client_port, client_host)
 end
-
--- tmr set
-tmr.alarm(tmr_active, 100000, tmr.ALARM_AUTO, active_net)
