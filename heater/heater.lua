@@ -1,7 +1,7 @@
 print('heater\n')
 
 temp, temp_dec = 26, 300
-temp_limit_low, temp_limit = 23, 24
+temp_limit = 23
 wait_time = 20
 work_time = 20
 heater_work = 0
@@ -60,6 +60,7 @@ function temp_ctrl()
    soc:on("receive", function(sck, cont)
       sck:close()
       local b = string.find(cont, '%.')
+      local temp_limit_low = temp_limit - 1
       temp = tonumber(string.sub(cont, 1, b - 1))
       temp_dec = tonumber(string.sub(cont, b + 1))
       if temp < temp_limit_low or temp == temp_limit_low and temp_dec <= 500 then

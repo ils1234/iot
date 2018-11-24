@@ -2,32 +2,26 @@ print("cron\n")
 
 -- cron call func
 function set_26(e)
-   temp_limit_low = 25
    temp_limit = 26
 end
 
 function set_25(e)
-   temp_limit_low = 24
    temp_limit = 25
 end
 
 function set_24(e)
-   temp_limit_low = 23
    temp_limit = 24
 end
 
 function set_23(e)
-   temp_limit_low = 22
    temp_limit = 23
 end
 
 function set_22(e)
-   temp_limit_low = 21
    temp_limit = 22
 end
 
 function set_cold(e)
-   temp_limit_low = 9
    temp_limit = 10
 end
 

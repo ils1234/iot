@@ -1,6 +1,6 @@
 print('server\n')
 
-server_chn = {h=1, c=-1, t=-1}
+server_chn = {h=1, s=-1, c=-1, t=-1}
 
 function close_socket(s)
    s:close()
@@ -54,15 +54,8 @@ function remote_ctrl(conn, content)
       end
    elseif cchn == 'h' then
       -- chn 1, output on|off|status
-      if val == 0 then
-	 heater_force_off()
-         print(chn .. " off")
-         conn:send("off")
-      elseif val == 1 then
-	 heater_force_on()
-         print(chn .. " on")
-         conn:send("on")
-      elseif val == 2 then
+      -- not support 0 and 1, control by temp_limit
+      if val == 2 then
          local v = gpio.read(chn)
          if v == gpio.HIGH then
             print("heater was on")
@@ -97,6 +90,17 @@ function remote_ctrl(conn, content)
 	 else
 	    conn:send('off')
 	 end
+      else
+         conn:send("bad val")
+         print("bad val " .. val)
+      end
+   elseif cchn == 's' then
+      if val == 2 then
+	 conn:send(tostring(temp_limit))
+	 print("temp set " .. temp_limit)
+      elseif val == 3 then
+	 conn:send(tostring(temp))
+	 print("temp now " .. string.format("%d.%03d", temp, temp_dec))
       else
          conn:send("bad val")
          print("bad val " .. val)
