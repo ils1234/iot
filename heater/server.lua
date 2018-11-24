@@ -99,8 +99,9 @@ function remote_ctrl(conn, content)
 	 conn:send(tostring(temp_limit))
 	 print("temp set " .. temp_limit)
       elseif val == 3 then
-	 conn:send(tostring(temp))
-	 print("temp now " .. string.format("%d.%03d", temp, temp_dec))
+	 local v = string.format("%d.%03d", temp, temp_dec)
+	 conn:send(v)
+	 print("temp now " .. v)
       else
          conn:send("bad val")
          print("bad val " .. val)
