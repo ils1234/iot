@@ -1,7 +1,7 @@
 print('server\n')
 
 -- out 12345678
-server_chn = {l=0, s=1, b=2, C=3, T=0,
+server_chn = {l=0, s=1, b=2, C=3, f=4, T=0,
 	      t=0, c=0}
 
 function close_socket(s)
@@ -63,7 +63,7 @@ function remote_ctrl(conn, content)
       local time_str = string.format("%04d-%02d-%02d %02d:%02d:%02d", tm["year"], tm["mon"], tm["day"], tm["hour"], tm["min"], tm["sec"])
       conn:send(time_str)
       print(time_str)
-   elseif cchn == 'l' or cchn == 's' or cchn == 'b' then
+   elseif cchn == 'l' or cchn == 's' or cchn == 'b' or cchn == 'f' then
       if val == 0 then
          gpio.write(chn, gpio.HIGH)
          print(chn .. " off")
@@ -84,15 +84,6 @@ function remote_ctrl(conn, content)
       else
          conn:send("bad val")
          print("bad val " .. val)
-      end
-   elseif cchn == 'f' then
-      local v = gpio.read(chn)
-      if v == gpio.HIGH then
-	 print("green light was on")
-	 conn:send("on")
-      else
-	 print("green light was off")
-	 conn:send("off")
       end
    elseif cchn == 'C' then
       -- charge state
