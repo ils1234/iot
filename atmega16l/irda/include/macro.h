@@ -16,19 +16,6 @@
 #define HIGH 1
 #define LOW 0
 
-#define INFLOW 0
-#define READY 1
-#define PROCESSED 2
-
-#define DEVICE_ADDR_H 0
-#define DEVICE_ADDR_L 1
-#define KEY_ADDR 2
-#define INIT_ADDR 3
-
-#define INNER_CTRL_H 0x04
-#define INNER_CTRL_L 0xfb
-#define INNER_KEY 0x72
-
 //for 7.3728M
 #ifdef F_CPU_73728
 #define F_CPU 7372800UL

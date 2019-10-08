@@ -3,37 +3,33 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include <avr/eeprom.h>
 #include "uart.h"
-#include "eeprom.h"
 #include "utils.h"
 #include "global.h"
 
 volatile byte bit_count;
 volatile byte data_ready;
 volatile byte data_repeat;
-volatile byte device_h = 0;
-volatile byte device_l = 0;
-volatile byte key = 0;
-volatile byte okey = 0;
-int arr[32];
+int arr[34];
 
 int main(void)
 {
 	//关中断，避免启动被打扰
 	cli();
 	//端口连接、设定、初始化
-	//A0 输出高, A1-A7 输入，上拉
+	//A0 输出高, A1-A7 输入，关闭上拉
 	DDRA = 0x01;
-	PORTA = 0xff;
-	//B0-B7 停用，上拉
+	PORTA = 0x01;
+	//B0-B7 停用，关闭上拉
 	DDRB=0X00;
-	PORTB=0xff;
-	//C0-C7 停用，上拉
+	PORTB=0x00;
+	//C0-C7 停用，关闭上拉
 	DDRC=0x00;
-	PORTC=0xff;
+	PORTC=0x00;
 	//D0-rxd, D1-txd,D2-int0红外, D3-int1按钮, D4-D7 disable
-	DDRD=0x00;
-	PORTD=0xff; //上拉
+	DDRD=0x80;
+	PORTD=0x0c; //D2 D3上拉
 	//MCUCR=0x03;
 	//GICR=0x40;
 	//设定串口
@@ -54,13 +50,11 @@ int main(void)
 	//初始化变量
 	bit_count = 200;
 	data_ready = 0;
-	data_repeat = 0;
 	//读取EEPROM
-	byte ctrl_device_h = ee_read(DEVICE_ADDR_H);
-	byte ctrl_device_l = ee_read(DEVICE_ADDR_L);
-	byte ctrl_key = ee_read(KEY_ADDR);
-	byte ctrl_init = ee_read(INIT_ADDR);
-	set_relay(ctrl_init);
+	byte ctrl_device_h = 0;
+	byte ctrl_device_l = 0xbf;
+	byte ctrl_key = 0x15;
+
 	//开启看门狗
 	wdt_enable(WDTO_2S);
 	//开中断，开始工作
@@ -70,7 +64,7 @@ int main(void)
 begin:
 		//喂狗
 		wdt_reset();
-		if (data_ready == READY) {
+		if (data_ready == 1) {
 			for (byte i = 0; i<32;i++) {
 				int during = arr[i];
 				if (during > LOW_MIN && during < LOW_MAX) {	
@@ -85,54 +79,47 @@ begin:
 					goto begin;
 				}
 			}
-			device_h = 0;
+			byte device_h = 0;
+			byte device_l = 0;
+			byte key = 0;
+			byte okey = 0;
+
 			for (byte i = 0; i<8;i++) {
 				device_h=device_h>>1|(byte)(arr[i]);
 			}
-			device_l = 0;
 			for (byte i = 8; i<16; i++) {
 				device_l=device_l>>1|(byte)(arr[i]);
 			}
-			key = 0;
 			for (byte i = 16; i<24; i++) {
 				key=key>>1|(byte)(arr[i]);
 			}
-			okey = 0;
 			for (byte i = 24; i<32; i++) {
 				okey=okey>>1|(byte)(arr[i]);
 			}
 			if ((key|okey) ==255) {
 				if (ctrl_device_h == device_h && ctrl_device_l == device_l && ctrl_key == key) {
-                	toggle_relay();	
-					uart_transmit('V');
-					_delay_ms(1000);
+                	if ((PINA&0x01) != 0) {
+		                PORTA = LOW;
+					}
+					else {
+						PORTA = HIGH;
+					}					
 				}
-				else if (INNER_CTRL_H == device_h && INNER_CTRL_L == device_l && INNER_KEY == key) {
-					toggle_relay();
-					uart_transmit('V');
-					_delay_ms(1000);
-				}
-				else {
-					uart_transmit('X');
-				}
+				uart_transmit(device_h);
+				uart_transmit(device_l);
+				uart_transmit(key);
 			}
 			else {
-				uart_transmit('C');
+				uart_transmit(0);
+				uart_transmit(device_h);
+				uart_transmit(device_l);
+				uart_transmit(key);
+				uart_transmit(okey);
 			}
-			data_ready = PROCESSED;
+			data_ready = 0;
 		}
-		if (data_repeat > 90) {
-			ctrl_device_h = device_h;
-			ctrl_device_l = device_l;
-			ctrl_key = key;
-			uart_transmit('R');
-			cli();
-			ee_write(DEVICE_ADDR_H, ctrl_device_h);
-			ee_write(DEVICE_ADDR_L, ctrl_device_l);
-			ee_write(KEY_ADDR, ctrl_key);
-			ee_write(INIT_ADDR, get_relay());
-			sei();
-			data_repeat = 0;			
+		if (data_repeat > 50) {
+			uart_transmit('r');
 		}
 	}
 }
@@ -144,38 +131,33 @@ ISR(INT0_vect)
 	
 	if (during>START_MIN && during < START_MAX) {
 		bit_count = 0;
-		data_ready = INFLOW;
+		data_ready = 0;
 		data_repeat = 0;
 	}
-	else if (during>REPEAT_MIN && during<REPEAT_MAX){
+	else if (during>REPEAT_MIN && during<REPEAT_MAX) {
 		data_repeat++;
 	}
-	else if (data_ready == INFLOW && bit_count<32) {
-   		arr[bit_count++] = during;
+	else {
+		arr[bit_count++] = during;
 		if (bit_count == 32) {
-			data_ready = READY;
+			data_ready = 1;
 		}
 	}
 }
 
 ISR(INT1_vect)
 {
-	_delay_ms(100);
-	if ((PIND & 0x08) != 0) {
-		return;
+	if ((PINA&0x01) != 0) {
+		PORTA = LOW;
 	}
-	_delay_ms(100);
-	if ((PIND & 0x08) != 0) {
-		return;
+	else {
+		PORTA = HIGH;
 	}
-	toggle_relay();
-	uart_transmit('B');
-	_delay_ms(500);
+    uart_transmit('B');
 }
 
 ISR(TIMER1_COMPA_vect)
 {
-	data_ready = INFLOW;
+	data_ready = 0;
 	data_repeat = 0;
-	bit_count = 0;
 }

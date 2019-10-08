@@ -7,6 +7,8 @@ Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "balcony_mcu", "balcony_mcu\
 EndProject
 Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "irda", "irda\irda.cproj", "{2855B046-071F-4EE9-B4DD-404C15D4AA43}"
 EndProject
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "io_fisher", "io_fisher\io_fisher.cproj", "{DE0C0818-CAC1-46B7-AA0C-BBE3D9A957D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AVR = Debug|AVR
@@ -21,6 +23,10 @@ Global
 		{2855B046-071F-4EE9-B4DD-404C15D4AA43}.Debug|AVR.Build.0 = Debug|AVR
 		{2855B046-071F-4EE9-B4DD-404C15D4AA43}.Release|AVR.ActiveCfg = Release|AVR
 		{2855B046-071F-4EE9-B4DD-404C15D4AA43}.Release|AVR.Build.0 = Release|AVR
+		{DE0C0818-CAC1-46B7-AA0C-BBE3D9A957D1}.Debug|AVR.ActiveCfg = Debug|AVR
+		{DE0C0818-CAC1-46B7-AA0C-BBE3D9A957D1}.Debug|AVR.Build.0 = Debug|AVR
+		{DE0C0818-CAC1-46B7-AA0C-BBE3D9A957D1}.Release|AVR.ActiveCfg = Release|AVR
+		{DE0C0818-CAC1-46B7-AA0C-BBE3D9A957D1}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,10 +8,5 @@
 
 #ifndef UTILS_H_
 #define UTILS_H_
-#include "global.h"
-
-byte toggle_relay();
-void set_relay(byte status);
-byte get_relay();
 
 #endif /* UTILS_H_ */
