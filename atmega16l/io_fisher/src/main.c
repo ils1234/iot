@@ -30,6 +30,8 @@ volatile byte uart_recv_total_last = 0;
 volatile byte bit_count = 0;
 volatile byte data_ready = 0;
 volatile byte arr[32];
+//传感状态
+volatile byte water_last = 0;
 //过滤状态, 过滤器需要连接在 PORTA 0, 高电平开启，低电平关闭，依赖PORTB 6状态传感器
 volatile byte filter_status = FILTER_GOOD;
 volatile byte filter_work = 0;
@@ -50,6 +52,7 @@ int main(void)
 	//B0-B7 输入，上拉
 	DDRB=0X00;
 	PORTB=0xff;
+    water_last = PINB;
 	//C0-C7 out，指示灯，高通
 	DDRC=0xff;
 	PORTC=0x00;
@@ -85,10 +88,22 @@ int main(void)
     //while做消息回复
 	while(1)
 	{
+        byte device_h = 0;
+        byte device_l = 0;
+        byte key = 0;
+        byte okey = 0;
 begin:
 		//喂狗
 		wdt_reset();
-		if (data_ready == IR_READY) {
+
+        //传感器状态检测发送
+        key = PINB & 0xe0;
+        if (water_last != key) {
+            water_last = key;
+            uart_send_water();
+        }
+        //红外状态检测发送
+        if (data_ready == IR_READY) {
 			for (byte i = 0; i<32;i++) {
 				int during = arr[i];
 				if (during > IR_LOW_MIN && during < IR_LOW_MAX) {
@@ -102,11 +117,6 @@ begin:
 					goto begin;
 				}
 			}
-			byte device_h = 0;
-			byte device_l = 0;
-			byte key = 0;
-			byte okey = 0;
-
 			for (byte i = 0; i<8;i++) {
 				device_h=device_h>>1|(byte)(arr[i]);
 			}

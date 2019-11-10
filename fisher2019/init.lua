@@ -16,5 +16,6 @@ do
    LFS.client()
    LFS.temp(1, 11)
    LFS.atmega16()
+   LFS.cron()
    LFS.server(2000, 12)
 end

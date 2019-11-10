@@ -35,5 +35,4 @@ local preload = "?.lc;?.lua", "/\n;\n?\n!\n-", "@init.lua", "_G", "_LOADED",
 "net.udpsocket", "newproxy", "package", "pairs", "path", "preload", "reload",
 "require", "seeall", "wdclr", "not enough memory", "sjson.decoder","sjson.encoder",
 "tmr.timer","DFS","aishidongfang","fisher","192.168.1.245","192.168.1.1","255.255.255.0",
-"http://dfserver/active.php","http://dfserver/index.php?r=fisher/","badval",
-"DrEaMFaCtUrY","badval","done","receive","sent"
+"http://dfserver/active.php","http://dfserver/index.php?r=fisher/","badarg","done","receive","sent"
