@@ -4,11 +4,10 @@ local set_Cron
 set_cron = function(c)
    --split c
    local b,ctime,f
-   b,_,ctime,f = string.find(c, '([/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+)%s(%d)')
+   b,_,ctime,f = string.find(c, '([/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+)%s([%w_]+)')
    if b == nil then
       return
    end
-   f = 'cron_' .. f
    if _G[f] == nil then
       return
    end

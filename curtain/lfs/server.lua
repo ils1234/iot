@@ -47,6 +47,12 @@ remote_ctrl = function(conn, data)
       elseif arg == 4 then
          clock_off()
          conn:send("off", close_socket)
+      elseif arg == 5 then
+         set_clock_mode_day();
+         conn:send("day", close_socket)
+      elseif arg == 6 then
+         set_clock_mode_night()
+         conn:send("night", close_sockey)
       else
          conn:send("badarg", close_socket)
       end
