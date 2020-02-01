@@ -1,5 +1,7 @@
 local pin_clock,pin_hcsr = ...
 local clock_mode = 1
+local off_wait = 120
+local curr_wait = 120
 local hcsr_trig
 
 clock_on = function()
@@ -12,21 +14,16 @@ end
 
 hcsr_trig = function()
    gpio.write(pin_clock, gpio.HIGH)
-   if clock_mode == 2 then
-      tmr.create():alarm(60000, tmr.ALARM_SINGLE, function()
-                            clock_off()
-                                                  end)
-   end
+   curr_wait = off_wait
 end
 
 set_clock_mode_day = function()
    clock_mode = 1
-   gpio.write(pin_clock, gpio.HIGH)
+   clock_on()
 end
 
 set_clock_mode_night = function()
    clock_mode = 2
-   gpio.write(pin_clock, gpio.LOW)
 end
 
 do
@@ -34,4 +31,14 @@ do
    gpio.mode(pin_hcsr, gpio.INT)
    gpio.write(pin_clock, gpio.HIGH)
    gpio.trig(pin_hcsr, "up", hcsr_trig)
+
+   tmr.create():alarm(1000, tmr.ALARM_AUTO,
+                      function()
+                         if clock_mode == 2 then
+                            curr_wait = curr_wait - 1
+                            if curr_wait == 0 then
+                               clock_off()
+                            end
+                         end
+                      end)
 end

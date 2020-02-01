@@ -11,6 +11,7 @@
 #include "global.h"
 
 extern void uart_send_relay();
+extern void uart_send_radio(const byte value);
 extern void uart_send_water();
 extern void uart_send_freq();
 extern void uart_send_queue(const byte * q);

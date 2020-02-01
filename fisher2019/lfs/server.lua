@@ -111,8 +111,10 @@ remote_ctrl = function(conn, data)
       elseif arg == 5 then
          --remove file
          file.remove(content)
+         conn:send('@')
       elseif arg == 8 then
          reload_cron()
+         conn:send('@')
       elseif arg == 9 then
          --rename init
          file.remove("init0.lua")

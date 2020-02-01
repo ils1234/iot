@@ -1,4 +1,3 @@
-local cron_value = {}
 local set_Cron
 
 set_cron = function(c)

@@ -66,6 +66,12 @@ inline void uart_send_water() {
 	uart_send_end();
 }
 
+inline void uart_send_radio(const byte v) {
+	uart_send_head("am_radio");
+	uart_send_half_byte(v);
+	uart_send_end();
+}
+
 inline void uart_send_freq() {
 	uart_send_head("am_freq");
 	uart_send_byte(OCR1AH);

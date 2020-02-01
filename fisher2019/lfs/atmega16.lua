@@ -39,6 +39,10 @@ end
 am_queue = function(data)   
 end
 
+am_radio = function(data)
+   fisher_request("radio", data)
+end
+
 am_key = function(data)
    fisher_request("key", data)
 end

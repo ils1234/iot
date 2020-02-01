@@ -32,6 +32,7 @@ volatile byte data_ready = 0;
 volatile byte arr[32];
 //传感状态
 volatile byte water_last = 0;
+volatile byte radio_last = 0;
 //过滤状态, 过滤器需要连接在 PORTA 0, 高电平开启，低电平关闭，依赖PORTB 6状态传感器
 volatile byte filter_status = FILTER_GOOD;
 volatile byte filter_work = 0;
@@ -49,9 +50,9 @@ int main(void)
 	//A0-A7 out，继电器，低通
 	DDRA = 0xff;
 	PORTA = 0xff;
-	//B0-B7 输入，上拉
+	//B0-B7 输入
 	DDRB=0X00;
-	PORTB=0xff;
+	PORTB=0x00;
     water_last = PINB;
 	//C0-C7 out，指示灯，高通
 	DDRC=0xff;
@@ -102,6 +103,26 @@ begin:
             water_last = key;
             uart_send_water();
         }
+		key = PINB & 0x1b;
+		if (radio_last != key) {
+			radio_last = key;
+			switch(key) {
+				case 0x10:
+					uart_send_radio(1);
+					break;
+				case 0x08:
+					uart_send_radio(2);
+					break;
+				case 0x02:
+					uart_send_radio(3);
+					break;
+				case 0x01:
+					uart_send_radio(4);
+					break;
+				default:
+					break;
+			}
+		}
         //红外状态检测发送
         if (data_ready == IR_READY) {
 			for (byte i = 0; i<32;i++) {
