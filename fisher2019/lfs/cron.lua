@@ -42,11 +42,17 @@ end
 
 reload_cron = function()
    cron.reset()
-   local fd,s
+   local b,fd,s,c1,c2,c3,c4,c5,c6
    fd = file.open('cron_value.txt', 'r')
    if fd then
       s = fd:readline()
-      b,_,cron_value[1],cron_value[2],cron_value[3],cron_value[4],cron_value[5],cron_value[6] = string.find(s, '(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+)')
+      b,_,c1,c2,c3,c4,c5,c6 = string.find(s, '(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+)%s+(%d+)')
+      cron_value[1] = tonumber(c1)
+      cron_value[2] = tonumber(c2)
+      cron_value[3] = tonumber(c3)
+      cron_value[4] = tonumber(c4)
+      cron_value[5] = tonumber(c5)
+      cron_value[6] = tonumber(c6)
       fd:close()
    end
  
