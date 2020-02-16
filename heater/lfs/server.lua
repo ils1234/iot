@@ -35,13 +35,7 @@ remote_ctrl = function(conn, data)
          conn:send("on", close_socket)
       elseif arg == 2 then
          local v = gpio.read(pin_relay)
-         local relay
-         if v == gpio.HIGH then
-            relay = 'on'
-         else
-            relay = 'off'
-         end
-         conn:send(string.format("%s %s %d %d", relay, temp_full, temp_limit, current), close_socket)
+         conn:send(string.format("%s %d.%d %d.%d %d %d", relay, temp, temp_dec, humi, humi_dec, temp_limit, current), close_socket)
       elseif arg == 3 then
          temp_limit = tonumber(content)
          conn:send('done', close_socket)

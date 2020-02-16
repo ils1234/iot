@@ -14,7 +14,8 @@ do
    --load lfs
    node.flashindex("_init")()
    LFS.client("192.168.1.243", 2000)
-   LFS.heater(1, 3, 0, 4)
+   LFS.heater(1, 0)
    LFS.cron()
+   LFS.lcd(2, 3, 5)
    LFS.server(2000, 1)
 end
