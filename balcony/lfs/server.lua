@@ -111,11 +111,6 @@ remote_ctrl = function(conn, data)
    end
 end
 
-function srv_listen(conn)
-   conn:on("receive", remote_ctrl)
-   conn:on("sent", close_socket)
-end
-
 do
    net.createServer(net.TCP):listen(port, function(conn)
                                        conn:on("receive", remote_ctrl)

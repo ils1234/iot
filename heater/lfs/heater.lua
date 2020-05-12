@@ -20,7 +20,9 @@ set_heater_off = function()
 end
 
 local heater_ctrl = function()
-   current = current + 1
+   if current < 2000 then
+      current = current + 1
+   end
    local v = gpio.read(pin_relay)
    if v == gpio.HIGH then
       if current >= work_time then

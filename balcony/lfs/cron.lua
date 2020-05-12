@@ -27,7 +27,7 @@ end
 
 set_cron = function(c)
    --split c
-   local b,ctime,f
+   local b,ctime,f,e
    b,_,ctime,f = string.find(c, '([/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+)%s(%d%d)')
    if b == nil then
       return
@@ -36,7 +36,10 @@ set_cron = function(c)
    if _G[f] == nil then
       return
    end
-   cron.schedule(ctime, _G[f])
+   e = cron.schedule(ctime, _G[f])
+   if e == nil then
+      print("set cron %s failed", c)
+   end
 end
 
 reload_cron = function()

@@ -26,11 +26,7 @@ remote_ctrl = function(conn, data)
    part3 = nil
    local cmd = string.sub(data, 1, 1)
    local arg = tonumber(string.sub(data, 2, 2))
-   if cmd == '0' then
-      --keep 020202 response temp for old heater
-      local temp,humi = get_temp()
-      conn:send(temp, close_socket)
-   elseif cmd == 'r' then
+   if cmd == 'r' then
       if arg == 0 then
          curtain_up()
          conn:send("up", close_socket)

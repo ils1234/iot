@@ -1,4 +1,16 @@
-local pin_cs, pin_sid, pin_clk = ...
+local pin_cs, pin_sid, pin_clk, pin_bl = ...
+
+backlight = 'on'
+
+backlight_on = function()
+   gpio.write(pin_bl, gpio.HIGH)
+   backlight = 'on'
+end
+
+backlight_off = function()
+   gpio.write(pin_bl, gpio.LOW)
+   backlight = 'off'
+end
 
 local enable = function()
    gpio.write(pin_cs, gpio.HIGH)
@@ -76,7 +88,7 @@ display = function()
    local date = string.format("%04d-%02d-%02d %02d:%02d", tm["year"], tm["mon"], tm["day"], tm["hour"], tm["min"])
 
    lcd_print(0, 0, date)
-   tmr.create():alarm(1000, tmr.ALARM_SINGLE, display_t)
+   tmr.create():alarm(200, tmr.ALARM_SINGLE, display_t)
 end
 
 display_t = function()
@@ -87,7 +99,7 @@ display_t = function()
       v = 0
    end
    lcd_print(1, 0, string.format('室内温度  %d.%d℃', temp, v))
-   tmr.create():alarm(1000, tmr.ALARM_SINGLE, display_h)
+   tmr.create():alarm(200, tmr.ALARM_SINGLE, display_h)
 end
 
 display_h = function()
@@ -98,20 +110,33 @@ display_h = function()
       v = 0
    end
    lcd_print(2, 0, string.format('空气湿度  %d.%d％', humi, v))
-   tmr.create():alarm(1000, tmr.ALARM_SINGLE, display_r)
+   tmr.create():alarm(200, tmr.ALARM_SINGLE, display_r)
 end
 
 display_r = function()
-   lcd_print(3, 0, string.format('锅炉%4s %5d分', relay, current))
+   local v,t
+   if relay == 'on' then
+      v = '启动'
+   else
+      v = '关闭'
+   end
+   if current <= 1440 then
+      t = string.format('%4d分钟', current)
+   else
+      t = '多于一天'
+   end
+   lcd_print(3, 0, string.format('锅炉%s%s', v, t))
 end
 
 do
    gpio.mode(pin_cs, gpio.OUTPUT)
    gpio.mode(pin_sid, gpio.OUTPUT)
    gpio.mode(pin_clk, gpio.OUTPUT)
+   gpio.mode(pin_bl, gpio.OUTPUT)
    gpio.write(pin_cs, gpio.LOW)
    gpio.write(pin_sid, gpio.LOW)
    gpio.write(pin_clk, gpio.LOW)
+   gpio.write(pin_bl, gpio.HIGH)
 
    lcd_init()
    display()

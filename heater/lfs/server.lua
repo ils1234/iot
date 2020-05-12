@@ -1,4 +1,4 @@
-local port, pin_relay = ...
+local port = ...
 
 local close_socket, remote_ctrl
 local v,i,fd
@@ -10,6 +10,7 @@ end
 -- set server
 remote_ctrl = function(conn, data)
    if string.len(data) < 6 then
+      conn:send("badarg", close_socket)
       return
    end
    local part1 = string.sub(data, 1, 2)
@@ -34,11 +35,22 @@ remote_ctrl = function(conn, data)
          set_heater_on()
          conn:send("on", close_socket)
       elseif arg == 2 then
-         local v = gpio.read(pin_relay)
-         conn:send(string.format("%s %d.%d %d.%d %d %d", relay, temp, temp_dec, humi, humi_dec, temp_limit, current), close_socket)
+         conn:send(string.format("%s %d.%d %d.%d %d %d %s", relay, temp, temp_dec, humi, humi_dec, temp_limit, current, backlight), close_socket)
       elseif arg == 3 then
          temp_limit = tonumber(content)
          conn:send('done', close_socket)
+      else
+         conn:send("badarg", close_socket)
+      end
+   elseif cmd == 'b' then
+      if arg == 0 then
+         backlight_off()
+         conn:send("off", close_socket)
+      elseif arg == 1 then
+         backlight_on()
+         conn:send("on", close_socket)
+      elseif arg == 2 then
+         conn:send(backlight, close_socket)
       else
          conn:send("badarg", close_socket)
       end

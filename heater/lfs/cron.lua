@@ -1,6 +1,14 @@
 local set_Cron
 
---cron call, only 1-6
+--cron call
+cron_0 = function(e)
+   backlight_off()
+end
+
+cron_1 = function(e)
+   backlight_on()
+end
+
 cron_10 = function(e)
    temp_limit = 10
 end
@@ -28,7 +36,7 @@ end
 set_cron = function(c)
    --split c
    local b,ctime,f
-   b,_,ctime,f = string.find(c, '([/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+)%s(%d)')
+   b,_,ctime,f = string.find(c, '([/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+%s[/,%*%d]+)%s(%d+)')
    if b == nil then
       return
    end

@@ -10,16 +10,22 @@ get_charge = function()
    return v,f,full_tick,start_time,end_time
 end
 
+stop_charge = function()
+   gpio.write(pin_charger, gpio.HIGH)
+   end_time = rtctime.get()
+end
+
 start_charge = function()
    full_tick = 0
    gpio.write(pin_charger, gpio.LOW)
    start_time = rtctime.get()
    end_time = 0
-end
-
-stop_charge = function()
-   gpio.write(pin_charger, gpio.HIGH)
-   end_time = rtctime.get()
+   tmr.create():alarm(900000, tmr.ALARM_SINGLE, function()
+                         local v = gpio.read(pin_full)
+                         if v == gpio.HIGH then
+                            stop_charge()
+                         end
+                                                end)
 end
 
 local auto_stop_charge
