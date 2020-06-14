@@ -25,6 +25,10 @@ cron_21 = function(e)
    set_switch(2, 1)
 end
 
+cron_30 = function(e)
+   start_charge()
+end
+
 set_cron = function(c)
    --split c
    local b,ctime,f,e

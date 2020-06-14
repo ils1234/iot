@@ -13,11 +13,12 @@ do
    sntp.sync(nil, nil, nil, 1)
    --load lfs
    node.flashindex("_init")()
-   tmr.create():alarm(1000, tmr.ALARM_SINGLE, function()
-                         LFS.temp(11)
-                                              end)
    LFS.charge(3, 12)
    LFS.switch(0, 1, 2)
    LFS.cron()
    LFS.server(2000)
+   tmr.create():alarm(1000, tmr.ALARM_SINGLE, function()
+                         LFS.temp(11)
+                                              end)
+
 end
